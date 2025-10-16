@@ -1,10 +1,11 @@
-
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+
+import logica.FabricaEnvios;
 import logica.Logistica;
 import modelos.*;
 
@@ -26,8 +27,10 @@ public class FrmEnvios extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
+        // Inicializa la lógica principal
         logistica = new Logistica();
 
+        // Barra de herramientas
         JToolBar tbEnvios = new JToolBar();
         tbEnvios.setFloatable(false);
 
@@ -41,6 +44,7 @@ public class FrmEnvios extends JFrame {
         btnEliminar.setToolTipText("Eliminar Envío");
         tbEnvios.add(btnEliminar);
 
+        // Panel de datos
         JPanel pnlEnvios = new JPanel();
         pnlEnvios.setLayout(new BoxLayout(pnlEnvios, BoxLayout.Y_AXIS));
 
@@ -60,8 +64,8 @@ public class FrmEnvios extends JFrame {
         lblTipo.setBounds(300, 10, 80, 25);
         pnlEditarEnvio.add(lblTipo);
 
-        cmbTipoPaquete = new JComboBox<>(new String[]{
-            "Seleccionar...", "Terrestre", "Maritimo", "Aéreo"
+        cmbTipoPaquete = new JComboBox<>(new String[] {
+                "Seleccionar...", "Terrestre", "Maritimo", "Aéreo"
         });
         cmbTipoPaquete.setBounds(400, 10, 120, 25);
         pnlEditarEnvio.add(cmbTipoPaquete);
@@ -98,7 +102,8 @@ public class FrmEnvios extends JFrame {
         btnCancelar.setBounds(420, 80, 100, 30);
         pnlEditarEnvio.add(btnCancelar);
 
-        String[] columnas = {"Tipo", "Código", "Cliente", "Peso", "Distancia", "Costo"};
+        // Tabla
+        String[] columnas = { "Tipo", "Código", "Cliente", "Peso", "Distancia", "Costo" };
         modelo = new DefaultTableModel(columnas, 0);
         tblEnvios = new JTable(modelo);
         JScrollPane spListaEnvios = new JScrollPane(tblEnvios);
@@ -156,7 +161,8 @@ public class FrmEnvios extends JFrame {
             peso = Double.parseDouble(txtPeso.getText());
             distancia = Double.parseDouble(txtDireccion.getText());
         } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Peso y distancia deben ser numéricos.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Peso y distancia deben ser numéricos.", "Error",
+                    JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -165,24 +171,24 @@ public class FrmEnvios extends JFrame {
             return;
         }
 
-        Envio envio = null;
-        if (tipo.equals("Terrestre")) {
-            envio = new Terrestre(codigo, cliente, peso, distancia);
-        } else if (tipo.equals("Maritimo")) {
-            envio = new Maritimo(codigo, cliente, peso, distancia);
-        } else if (tipo.equals("Aéreo")) {
-            envio = new Aereo(codigo, cliente, peso, distancia);
+        Envio envio;
+        try {
+            // Se reemplaza GestionEnvios por FabricaEnvios
+            envio = FabricaEnvios.crearEnvio(tipo, codigo, cliente, peso, distancia);
+        } catch (IllegalArgumentException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            return;
         }
 
         if (envio != null) {
             logistica.agregarEnvio(envio);
             Object[] fila = {
-                tipo,
-                envio.getCodigo(),
-                envio.getCliente(),
-                envio.getPeso(),
-                envio.getDistancia(),
-                envio.calcularTarifa()
+                    tipo,
+                    envio.getCodigo(),
+                    envio.getCliente(),
+                    envio.getPeso(),
+                    envio.getDistancia(),
+                    envio.calcularTarifa()
             };
             modelo.addRow(fila);
             limpiarCampos();
@@ -196,7 +202,8 @@ public class FrmEnvios extends JFrame {
             logistica.eliminarEnvio(codigo);
             modelo.removeRow(filaSeleccionada);
         } else {
-            JOptionPane.showMessageDialog(this, "Seleccione un envío para eliminar.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Seleccione un envío para eliminar.", "Advertencia",
+                    JOptionPane.WARNING_MESSAGE);
         }
     }
 
@@ -212,4 +219,3 @@ public class FrmEnvios extends JFrame {
         new FrmEnvios().setVisible(true);
     }
 }
-

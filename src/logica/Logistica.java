@@ -17,8 +17,7 @@ public class Logistica {
 
     public void eliminarEnvio(String codigo) {
         for (int i = 0; i < envios.size(); i++) {
-            Envio e = envios.get(i);
-            if (e.getCodigo().equals(codigo)) {
+            if (envios.get(i).getCodigo().equals(codigo)) {
                 envios.remove(i);
                 break;
             }
@@ -29,6 +28,5 @@ public class Logistica {
         return envios;
     }
 }
-
 
 
