@@ -4,9 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import logica.GestionEnvios;
-import logica.LogisticaEnvios;
-import logica.ValidadorEnvio;
+import logica.*;
 import modelos.*;
 
 public class FrmEnvios extends JFrame {
@@ -17,6 +15,7 @@ public class FrmEnvios extends JFrame {
     private JComboBox<String> cmbTipoEnvio;
     private JTabbedPane tp;
     private LogisticaEnvios logistica;
+    private ControladorEnvios controlador;
     private DefaultTableModel modelo;
     private JButton btnAgregar, btnEliminar, btnGuardar, btnCancelar;
 
@@ -27,7 +26,9 @@ public class FrmEnvios extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
+        // Lógica y controlador
         logistica = new LogisticaEnvios();
+        controlador = new ControladorEnvios(logistica);
 
         // Barra de herramientas
         JToolBar tbEnvios = new JToolBar();
@@ -136,7 +137,6 @@ public class FrmEnvios extends JFrame {
             }
         });
 
-       
         btnEliminar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -153,35 +153,28 @@ public class FrmEnvios extends JFrame {
     }
 
     private void guardarEnvio() {
-    String codigo = txtCodigo.getText().trim();
-    String cliente = txtRemitente.getText().trim();
+        String codigo = txtCodigo.getText().trim();
+        String cliente = txtRemitente.getText().trim();
+        String pesoStr = txtPeso.getText().trim();
+        String distanciaStr = txtDistancia.getText().trim();
+        TipoEnvio tipo = null;
 
-    if (!ValidadorEnvio.tipoValido(cmbTipoEnvio.getSelectedIndex())) {
-        JOptionPane.showMessageDialog(this, "Seleccione un tipo de envío válido.", "Error",
-                JOptionPane.WARNING_MESSAGE);
-        return;
-    }
-    if (!ValidadorEnvio.camposCompletos(codigo, cliente, txtPeso.getText(), txtDistancia.getText())) {
-        JOptionPane.showMessageDialog(this, "Complete todos los campos.", "Error",
-                JOptionPane.WARNING_MESSAGE);
-        return;
-    }
-    if (!ValidadorEnvio.valoresNumericos(txtCodigo.getText(),txtPeso.getText(), txtDistancia.getText())) {
-        JOptionPane.showMessageDialog(this, "Número, peso y distancia deben ser numéricos.", "Error",
-                JOptionPane.ERROR_MESSAGE);
-        return;
-    }
-        double peso = Double.parseDouble(txtPeso.getText());
-        double distancia = Double.parseDouble(txtDistancia.getText());
-        TipoEnvio tipo = TipoEnvio.valueOf(cmbTipoEnvio.getSelectedItem().toString().toUpperCase());
-        Envio envio = GestionEnvios.crearEnvio(tipo, codigo, cliente, peso, distancia);
-        logistica.agregarEnvio(envio);
+        try {
+            tipo = TipoEnvio.valueOf(cmbTipoEnvio.getSelectedItem().toString().toUpperCase());
+        } catch (IllegalArgumentException error) {
+            tipo = null;
+        }
 
-        Object[] fila = { tipo, codigo, cliente, peso, distancia, envio.calcularTarifa() };
-        modelo.addRow(fila);
+        boolean exito = controlador.agregarEnvio(codigo, cliente, pesoStr, distanciaStr, tipo);
+        if (exito) {
+            Envio envio = logistica.listarEnvios().get(logistica.listarEnvios().size() - 1);
+            Object[] fila = { tipo, codigo, cliente, Double.parseDouble(pesoStr),
+                    Double.parseDouble(distanciaStr), envio.calcularTarifa() };
+            modelo.addRow(fila);
+            limpiarCampos();
+        }
+    }
 
-        limpiarCampos();
-}
     private void eliminarEnvio() {
         int filaSeleccionada = tblEnvios.getSelectedRow();
         if (filaSeleccionada >= 0) {
@@ -189,7 +182,7 @@ public class FrmEnvios extends JFrame {
                     JOptionPane.YES_NO_OPTION);
             if (respuesta == JOptionPane.YES_OPTION) {
                 String codigo = modelo.getValueAt(filaSeleccionada, 1).toString();
-                logistica.eliminarEnvio(codigo);
+                controlador.eliminarEnvio(codigo);
                 modelo.removeRow(filaSeleccionada);
             }
         } else {

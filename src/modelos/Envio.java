@@ -7,8 +7,12 @@ public abstract class Envio {
     private double distancia;
 
     public Envio(String codigo, String cliente, double peso, double distancia) {
-        if (peso < 0 || distancia < 0) {
-            throw new IllegalArgumentException("Peso y distancia deben ser positivos.");
+        if (peso < 0) {
+            throw new IllegalArgumentException("Peso debe ser positivo.");
+        }
+        
+        if (distancia < 0) {
+            throw new IllegalArgumentException("Distancia debe ser positiva.");
         }
         this.codigo = codigo;
         this.cliente = cliente;
@@ -16,12 +20,21 @@ public abstract class Envio {
         this.distancia = distancia;
     }
 
-    public String getCodigo() { return codigo; }
-    public String getCliente() { return cliente; }
-    public double getPeso() { return peso; }
-    public double getDistancia() { return distancia; }
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public String getCliente() {
+        return cliente;
+    }
+
+    public double getPeso() {
+        return peso;
+    }
+
+    public double getDistancia() {
+        return distancia;
+    }
 
     public abstract double calcularTarifa();
 }
-
-
