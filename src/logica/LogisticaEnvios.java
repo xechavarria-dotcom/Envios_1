@@ -5,6 +5,7 @@ import java.util.List;
 import modelos.Envio;
 
 public class LogisticaEnvios {
+
     private List<Envio> envios;
 
     public LogisticaEnvios() {
@@ -19,14 +20,17 @@ public class LogisticaEnvios {
         for (int i = 0; i < envios.size(); i++) {
             if (envios.get(i).getCodigo().equals(codigo)) {
                 envios.remove(i);
-                break;
+                break; 
             }
         }
     }
 
     public List<Envio> listarEnvios() {
-        return envios;
+        List<Envio> copiaEnvios = new ArrayList<Envio>();
+        for (Envio envio : envios) {
+            copiaEnvios.add(envio);
+        }
+        return copiaEnvios;
     }
 }
-
 

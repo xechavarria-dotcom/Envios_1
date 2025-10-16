@@ -4,17 +4,17 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-
 import logica.GestionEnvios;
 import logica.LogisticaEnvios;
+import logica.ValidadorEnvio;
 import modelos.*;
 
 public class FrmEnvios extends JFrame {
 
     private JTable tblEnvios;
     private JPanel pnlEditarEnvio;
-    private JTextField txtCodigo, txtRemitente, txtDireccion, txtPeso;
-    private JComboBox<String> cmbTipoPaquete;
+    private JTextField txtCodigo, txtRemitente, txtDistancia, txtPeso;
+    private JComboBox<String> cmbTipoEnvio;
     private JTabbedPane tp;
     private LogisticaEnvios logistica;
     private DefaultTableModel modelo;
@@ -26,9 +26,7 @@ public class FrmEnvios extends JFrame {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
-        
 
-        // Inicializa la lógica principal
         logistica = new LogisticaEnvios();
 
         // Barra de herramientas
@@ -45,7 +43,7 @@ public class FrmEnvios extends JFrame {
         btnEliminar.setToolTipText("Eliminar Envío");
         tbEnvios.add(btnEliminar);
 
-        // Panel de datos
+        // Panel principal
         JPanel pnlEnvios = new JPanel();
         pnlEnvios.setLayout(new BoxLayout(pnlEnvios, BoxLayout.Y_AXIS));
 
@@ -53,6 +51,7 @@ public class FrmEnvios extends JFrame {
         pnlEditarEnvio.setPreferredSize(new Dimension(800, 120));
         pnlEditarEnvio.setLayout(null);
 
+        // Campos y etiquetas
         JLabel lblCodigo = new JLabel("Número");
         lblCodigo.setBounds(10, 10, 80, 25);
         pnlEditarEnvio.add(lblCodigo);
@@ -65,11 +64,9 @@ public class FrmEnvios extends JFrame {
         lblTipo.setBounds(300, 10, 80, 25);
         pnlEditarEnvio.add(lblTipo);
 
-        cmbTipoPaquete = new JComboBox<>(new String[] {
-                "Seleccionar...", "Terrestre", "Maritimo", "Aéreo"
-        });
-        cmbTipoPaquete.setBounds(400, 10, 120, 25);
-        pnlEditarEnvio.add(cmbTipoPaquete);
+        cmbTipoEnvio = new JComboBox<>(new String[] { "Seleccionar...", "Terrestre", "Maritimo", "Aéreo" });
+        cmbTipoEnvio.setBounds(400, 10, 120, 25);
+        pnlEditarEnvio.add(cmbTipoEnvio);
 
         JLabel lblCliente = new JLabel("Cliente");
         lblCliente.setBounds(10, 45, 80, 25);
@@ -83,9 +80,9 @@ public class FrmEnvios extends JFrame {
         lblDistancia.setBounds(300, 45, 100, 25);
         pnlEditarEnvio.add(lblDistancia);
 
-        txtDireccion = new JTextField();
-        txtDireccion.setBounds(400, 45, 120, 25);
-        pnlEditarEnvio.add(txtDireccion);
+        txtDistancia = new JTextField();
+        txtDistancia.setBounds(400, 45, 120, 25);
+        pnlEditarEnvio.add(txtDistancia);
 
         JLabel lblPeso = new JLabel("Peso");
         lblPeso.setBounds(10, 80, 80, 25);
@@ -126,24 +123,29 @@ public class FrmEnvios extends JFrame {
 
     private void agregarEventos() {
         btnAgregar.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 limpiarCampos();
             }
         });
 
         btnGuardar.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 guardarEnvio();
             }
         });
 
+       
         btnEliminar.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 eliminarEnvio();
             }
         });
 
         btnCancelar.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent e) {
                 limpiarCampos();
             }
@@ -151,55 +153,45 @@ public class FrmEnvios extends JFrame {
     }
 
     private void guardarEnvio() {
-        String tipo = (String) cmbTipoPaquete.getSelectedItem();
-        String codigo = txtCodigo.getText();
-        String cliente = txtRemitente.getText();
-        double peso;
-        double distancia;
+    String codigo = txtCodigo.getText().trim();
+    String cliente = txtRemitente.getText().trim();
 
-        try {
-            peso = Double.parseDouble(txtPeso.getText());
-            distancia = Double.parseDouble(txtDireccion.getText());
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Peso y distancia deben ser numéricos.", "Error",
-                    JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        if (tipo.equals("Seleccionar...")) {
-            JOptionPane.showMessageDialog(this, "Seleccione un tipo de envío.", "Error", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        Envio envio;
-        try {
-            envio = GestionEnvios.crearEnvio(tipo, codigo, cliente, peso, distancia);
-        } catch (IllegalArgumentException ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        if (envio != null) {
-            logistica.agregarEnvio(envio);
-            Object[] fila = {
-                    tipo,
-                    envio.getCodigo(),
-                    envio.getCliente(),
-                    envio.getPeso(),
-                    envio.getDistancia(),
-                    envio.calcularTarifa()
-            };
-            modelo.addRow(fila);
-            limpiarCampos();
-        }
+    if (!ValidadorEnvio.tipoValido(cmbTipoEnvio.getSelectedIndex())) {
+        JOptionPane.showMessageDialog(this, "Seleccione un tipo de envío válido.", "Error",
+                JOptionPane.WARNING_MESSAGE);
+        return;
     }
+    if (!ValidadorEnvio.camposCompletos(codigo, cliente, txtPeso.getText(), txtDistancia.getText())) {
+        JOptionPane.showMessageDialog(this, "Complete todos los campos.", "Error",
+                JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+    if (!ValidadorEnvio.valoresNumericos(txtCodigo.getText(),txtPeso.getText(), txtDistancia.getText())) {
+        JOptionPane.showMessageDialog(this, "Número, peso y distancia deben ser numéricos.", "Error",
+                JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+        double peso = Double.parseDouble(txtPeso.getText());
+        double distancia = Double.parseDouble(txtDistancia.getText());
+        TipoEnvio tipo = TipoEnvio.valueOf(cmbTipoEnvio.getSelectedItem().toString().toUpperCase());
+        Envio envio = GestionEnvios.crearEnvio(tipo, codigo, cliente, peso, distancia);
+        logistica.agregarEnvio(envio);
 
+        Object[] fila = { tipo, codigo, cliente, peso, distancia, envio.calcularTarifa() };
+        modelo.addRow(fila);
+
+        limpiarCampos();
+}
     private void eliminarEnvio() {
         int filaSeleccionada = tblEnvios.getSelectedRow();
         if (filaSeleccionada >= 0) {
-            String codigo = modelo.getValueAt(filaSeleccionada, 1).toString();
-            logistica.eliminarEnvio(codigo);
-            modelo.removeRow(filaSeleccionada);
+            int respuesta = JOptionPane.showConfirmDialog(this, "¿Desea eliminar este envío?", "Confirmar",
+                    JOptionPane.YES_NO_OPTION);
+            if (respuesta == JOptionPane.YES_OPTION) {
+                String codigo = modelo.getValueAt(filaSeleccionada, 1).toString();
+                logistica.eliminarEnvio(codigo);
+                modelo.removeRow(filaSeleccionada);
+            }
         } else {
             JOptionPane.showMessageDialog(this, "Seleccione un envío para eliminar.", "Advertencia",
                     JOptionPane.WARNING_MESSAGE);
@@ -209,10 +201,8 @@ public class FrmEnvios extends JFrame {
     private void limpiarCampos() {
         txtCodigo.setText("");
         txtRemitente.setText("");
-        txtDireccion.setText("");
+        txtDistancia.setText("");
         txtPeso.setText("");
-        cmbTipoPaquete.setSelectedIndex(0);
+        cmbTipoEnvio.setSelectedIndex(0);
     }
-
 }
-

@@ -1,34 +1,27 @@
 package modelos;
 
 public abstract class Envio {
-    protected String codigo;
-    protected String cliente;
-    protected double peso;
-    protected double distancia;
+    private String codigo;
+    private String cliente;
+    private double peso;
+    private double distancia;
 
     public Envio(String codigo, String cliente, double peso, double distancia) {
+        if (peso < 0 || distancia < 0) {
+            throw new IllegalArgumentException("Peso y distancia deben ser positivos.");
+        }
         this.codigo = codigo;
         this.cliente = cliente;
         this.peso = peso;
         this.distancia = distancia;
     }
 
-    public String getCodigo() {
-        return codigo;
-    }
-
-    public String getCliente() {
-        return cliente;
-    }
-
-    public double getPeso() {
-        return peso;
-    }
-
-    public double getDistancia() {
-        return distancia;
-    }
+    public String getCodigo() { return codigo; }
+    public String getCliente() { return cliente; }
+    public double getPeso() { return peso; }
+    public double getDistancia() { return distancia; }
 
     public abstract double calcularTarifa();
 }
+
 
