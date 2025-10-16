@@ -26,6 +26,7 @@ public class FrmEnvios extends JFrame {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
+        
 
         // Inicializa la lógica principal
         logistica = new LogisticaEnvios();
@@ -153,7 +154,6 @@ public class FrmEnvios extends JFrame {
         String tipo = (String) cmbTipoPaquete.getSelectedItem();
         String codigo = txtCodigo.getText();
         String cliente = txtRemitente.getText();
-
         double peso;
         double distancia;
 
@@ -214,7 +214,5 @@ public class FrmEnvios extends JFrame {
         cmbTipoPaquete.setSelectedIndex(0);
     }
 
-    public static void main(String[] args) {
-        new FrmEnvios().setVisible(true);
-    }
 }
+
