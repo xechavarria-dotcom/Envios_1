@@ -18,7 +18,7 @@ public class ValidadorEnvio {
             Double.parseDouble(distancia);
             Integer.parseInt(codigo);
             return true;
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException error) {
             return false;
         }
     }
