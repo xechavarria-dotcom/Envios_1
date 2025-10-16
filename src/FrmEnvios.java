@@ -173,7 +173,6 @@ public class FrmEnvios extends JFrame {
 
         Envio envio;
         try {
-            // Se reemplaza GestionEnvios por FabricaEnvios
             envio = FabricaEnvios.crearEnvio(tipo, codigo, cliente, peso, distancia);
         } catch (IllegalArgumentException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
