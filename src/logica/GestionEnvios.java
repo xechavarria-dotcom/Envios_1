@@ -2,9 +2,9 @@ package logica;
 
 import modelos.*;
 
-public class FabricaEnvios {
+public class GestionEnvios {
 
-    private FabricaEnvios() { }
+    private GestionEnvios() { }
 
     public static Envio crearEnvio(String tipo, String codigo, String cliente, double peso, double distancia) {
         switch (tipo) {

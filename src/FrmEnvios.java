@@ -5,8 +5,8 @@ import java.awt.event.ActionListener;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
-import logica.FabricaEnvios;
-import logica.Logistica;
+import logica.GestionEnvios;
+import logica.LogisticaEnvios;
 import modelos.*;
 
 public class FrmEnvios extends JFrame {
@@ -16,7 +16,7 @@ public class FrmEnvios extends JFrame {
     private JTextField txtCodigo, txtRemitente, txtDireccion, txtPeso;
     private JComboBox<String> cmbTipoPaquete;
     private JTabbedPane tp;
-    private Logistica logistica;
+    private LogisticaEnvios logistica;
     private DefaultTableModel modelo;
     private JButton btnAgregar, btnEliminar, btnGuardar, btnCancelar;
 
@@ -28,7 +28,7 @@ public class FrmEnvios extends JFrame {
         setLayout(new BorderLayout());
 
         // Inicializa la lógica principal
-        logistica = new Logistica();
+        logistica = new LogisticaEnvios();
 
         // Barra de herramientas
         JToolBar tbEnvios = new JToolBar();
@@ -173,7 +173,7 @@ public class FrmEnvios extends JFrame {
 
         Envio envio;
         try {
-            envio = FabricaEnvios.crearEnvio(tipo, codigo, cliente, peso, distancia);
+            envio = GestionEnvios.crearEnvio(tipo, codigo, cliente, peso, distancia);
         } catch (IllegalArgumentException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             return;

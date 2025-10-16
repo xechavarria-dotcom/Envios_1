@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import modelos.Envio;
 
-public class Logistica {
+public class LogisticaEnvios {
     private List<Envio> envios;
 
-    public Logistica() {
+    public LogisticaEnvios() {
         envios = new ArrayList<Envio>();
     }
 
