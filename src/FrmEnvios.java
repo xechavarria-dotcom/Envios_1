@@ -20,7 +20,7 @@ public class FrmEnvios extends JFrame {
     private JButton btnAgregar, btnEliminar, btnGuardar, btnCancelar;
 
     public FrmEnvios() {
-        setSize(800, 500);
+        setSize(900, 500);
         setTitle("Gestión de Envíos");
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);

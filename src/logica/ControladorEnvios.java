@@ -39,14 +39,9 @@ public class ControladorEnvios {
         return true;
     }
 
-    public boolean eliminarEnvio(String codigo) {
-        if (codigo == null || codigo.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Código inválido.", "Error",
-                    JOptionPane.WARNING_MESSAGE);
-            return false;
+        public void eliminarEnvio(String codigo) {
+            logistica.eliminarEnvio(codigo);
         }
-        logistica.eliminarEnvio(codigo);
-        return true;
     }
-}
+
 
