@@ -1,6 +1,5 @@
 package logica;
 
-import javax.swing.JOptionPane;
 import modelos.*;
 
 public class ControladorEnvios {
@@ -11,37 +10,33 @@ public class ControladorEnvios {
         this.logistica = logistica;
     }
 
-   
-    public boolean agregarEnvio(String codigo, String cliente, String pesoStr, String distanciaStr, TipoEnvio tipo) {
+    public String agregarEnvio(String codigo, String cliente, String pesoStr, String distanciaStr, TipoEnvio tipo) {
         if (!ValidadorEnvio.camposCompletos(codigo, cliente, pesoStr, distanciaStr)) {
-            JOptionPane.showMessageDialog(null, "Complete todos los campos.", "Error",
-                    JOptionPane.WARNING_MESSAGE);
-            return false;
+            return "Complete todos los campos.";
         }
 
         if (!ValidadorEnvio.valoresNumericos(codigo, pesoStr, distanciaStr)) {
-            JOptionPane.showMessageDialog(null, "Número, peso y distancia deben ser numéricos.", "Error",
-                    JOptionPane.ERROR_MESSAGE);
-            return false;
+            return "Número, peso y distancia deben ser numéricos.";
         }
-        
+
         if (tipo == null) {
-            JOptionPane.showMessageDialog(null, "Seleccione un tipo de envío válido.", "Error",
-                    JOptionPane.WARNING_MESSAGE);
-            return false;
+            return "Seleccione un tipo de envío válido.";
         }
 
         double peso = Double.parseDouble(pesoStr);
         double distancia = Double.parseDouble(distanciaStr);
+
         Envio envio = GestionEnvios.crearEnvio(tipo, codigo, cliente, peso, distancia);
         logistica.agregarEnvio(envio);
 
-        return true;
+        return "OK"; 
     }
 
-        public void eliminarEnvio(String codigo) {
-            logistica.eliminarEnvio(codigo);
-        }
+    public void eliminarEnvio(String codigo) {
+        logistica.eliminarEnvio(codigo);
     }
+}
+
+
 
 

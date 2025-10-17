@@ -26,7 +26,6 @@ public class FrmEnvios extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        // Lógica y controlador
         logistica = new LogisticaEnvios();
         controlador = new ControladorEnvios(logistica);
 
@@ -52,7 +51,6 @@ public class FrmEnvios extends JFrame {
         pnlEditarEnvio.setPreferredSize(new Dimension(800, 120));
         pnlEditarEnvio.setLayout(null);
 
-        // Campos y etiquetas
         JLabel lblCodigo = new JLabel("Número");
         lblCodigo.setBounds(10, 10, 80, 25);
         pnlEditarEnvio.add(lblCodigo);
@@ -101,7 +99,6 @@ public class FrmEnvios extends JFrame {
         btnCancelar.setBounds(420, 80, 100, 30);
         pnlEditarEnvio.add(btnCancelar);
 
-        // Tabla
         String[] columnas = { "Tipo", "Código", "Cliente", "Peso", "Distancia", "Costo" };
         modelo = new DefaultTableModel(columnas, 0);
         tblEnvios = new JTable(modelo);
@@ -124,28 +121,24 @@ public class FrmEnvios extends JFrame {
 
     private void agregarEventos() {
         btnAgregar.addActionListener(new ActionListener() {
-            @Override
             public void actionPerformed(ActionEvent e) {
                 limpiarCampos();
             }
         });
 
         btnGuardar.addActionListener(new ActionListener() {
-            @Override
             public void actionPerformed(ActionEvent e) {
                 guardarEnvio();
             }
         });
 
         btnEliminar.addActionListener(new ActionListener() {
-            @Override
             public void actionPerformed(ActionEvent e) {
                 eliminarEnvio();
             }
         });
 
         btnCancelar.addActionListener(new ActionListener() {
-            @Override
             public void actionPerformed(ActionEvent e) {
                 limpiarCampos();
             }
@@ -165,14 +158,18 @@ public class FrmEnvios extends JFrame {
             tipo = null;
         }
 
-        boolean exito = controlador.agregarEnvio(codigo, cliente, pesoStr, distanciaStr, tipo);
-        if (exito) {
-            Envio envio = logistica.listarEnvios().get(logistica.listarEnvios().size() - 1);
-            Object[] fila = { tipo, codigo, cliente, Double.parseDouble(pesoStr),
-                    Double.parseDouble(distanciaStr), envio.calcularTarifa() };
-            modelo.addRow(fila);
-            limpiarCampos();
+        String resultado = controlador.agregarEnvio(codigo, cliente, pesoStr, distanciaStr, tipo);
+
+        if (!resultado.equals("OK")) {
+            JOptionPane.showMessageDialog(this, resultado, "Error", JOptionPane.ERROR_MESSAGE);
+            return;
         }
+
+        Envio envio = logistica.listarEnvios().get(logistica.listarEnvios().size() - 1);
+        Object[] fila = { tipo, codigo, cliente, Double.parseDouble(pesoStr),
+                Double.parseDouble(distanciaStr), envio.calcularTarifa() };
+        modelo.addRow(fila);
+        limpiarCampos();
     }
 
     private void eliminarEnvio() {
@@ -199,3 +196,4 @@ public class FrmEnvios extends JFrame {
         cmbTipoEnvio.setSelectedIndex(0);
     }
 }
+
