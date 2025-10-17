@@ -164,7 +164,6 @@ public class FrmEnvios extends JFrame {
             JOptionPane.showMessageDialog(this, resultado, "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-
         Envio envio = logistica.listarEnvios().get(logistica.listarEnvios().size() - 1);
         Object[] fila = { tipo, codigo, cliente, Double.parseDouble(pesoStr),
                 Double.parseDouble(distanciaStr), envio.calcularTarifa() };

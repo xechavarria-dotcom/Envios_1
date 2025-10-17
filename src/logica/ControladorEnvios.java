@@ -26,17 +26,17 @@ public class ControladorEnvios {
         double peso = Double.parseDouble(pesoStr);
         double distancia = Double.parseDouble(distanciaStr);
 
+        if (peso <= 0 || distancia <= 0) {
+            return "Peso y distancia deben ser mayores que cero.";
+        }
+
         Envio envio = GestionEnvios.crearEnvio(tipo, codigo, cliente, peso, distancia);
         logistica.agregarEnvio(envio);
 
-        return "OK"; 
+        return "OK";
     }
 
     public void eliminarEnvio(String codigo) {
         logistica.eliminarEnvio(codigo);
     }
 }
-
-
-
-

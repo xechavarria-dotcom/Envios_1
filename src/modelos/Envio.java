@@ -7,13 +7,6 @@ public abstract class Envio {
     private double distancia;
 
     public Envio(String codigo, String cliente, double peso, double distancia) {
-        if (peso < 0) {
-            throw new IllegalArgumentException("Peso debe ser positivo.");
-        }
-        
-        if (distancia < 0) {
-            throw new IllegalArgumentException("Distancia debe ser positiva.");
-        }
         this.codigo = codigo;
         this.cliente = cliente;
         this.peso = peso;
