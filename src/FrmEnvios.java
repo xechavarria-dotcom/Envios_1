@@ -119,6 +119,8 @@ public class FrmEnvios extends JFrame {
         agregarEventos();
     }
 
+    // ====================== MÉTODOS AUXILIARES ======================
+
     private void agregarEventos() {
         btnAgregar.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -145,16 +147,28 @@ public class FrmEnvios extends JFrame {
         });
     }
 
-    private void guardarEnvio() {
-        String codigo = txtCodigo.getText().trim();
-        String cliente = txtRemitente.getText().trim();
-        String pesoStr = txtPeso.getText().trim();
-        String distanciaStr = txtDistancia.getText().trim();
-        TipoEnvio tipo = null;
+    private String[] obtenerDatosFormulario() {
+        String[] datos = new String[5];
+        datos[0] = txtCodigo.getText().trim();
+        datos[1] = txtRemitente.getText().trim();
+        datos[2] = txtPeso.getText().trim();
+        datos[3] = txtDistancia.getText().trim();
+        datos[4] = cmbTipoEnvio.getSelectedItem().toString();
+        return datos;
+    }
 
+    private void guardarEnvio() {
+        String[] datos = obtenerDatosFormulario();
+        String codigo = datos[0];
+        String cliente = datos[1];
+        String pesoStr = datos[2];
+        String distanciaStr = datos[3];
+        String tipoStr = datos[4];
+
+        TipoEnvio tipo = null;
         try {
-            tipo = TipoEnvio.valueOf(cmbTipoEnvio.getSelectedItem().toString().toUpperCase());
-        } catch (IllegalArgumentException error) {
+            tipo = TipoEnvio.valueOf(tipoStr.toUpperCase());
+        } catch (IllegalArgumentException e) {
             tipo = null;
         }
 
@@ -164,11 +178,21 @@ public class FrmEnvios extends JFrame {
             JOptionPane.showMessageDialog(this, resultado, "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
+
         Envio envio = logistica.listarEnvios().get(logistica.listarEnvios().size() - 1);
-        Object[] fila = { tipo, codigo, cliente, Double.parseDouble(pesoStr),
-                Double.parseDouble(distanciaStr), envio.calcularTarifa() };
-        modelo.addRow(fila);
+        agregarFilaTabla(envio, tipo);
         limpiarCampos();
+    }
+
+    private void agregarFilaTabla(Envio envio, TipoEnvio tipo) {
+        modelo.addRow(new Object[] {
+            tipo,
+            envio.getCodigo(),
+            envio.getCliente(),
+            envio.getPeso(),
+            envio.getDistancia(),
+            envio.calcularTarifa()
+        });
     }
 
     private void eliminarEnvio() {
@@ -195,4 +219,5 @@ public class FrmEnvios extends JFrame {
         cmbTipoEnvio.setSelectedIndex(0);
     }
 }
+
 
